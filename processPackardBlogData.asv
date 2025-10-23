@@ -1,0 +1,43 @@
+[lat, lon, unixtime] = getPackardLocation();
+
+databaseName = 'glidata';
+username = 'glidata_user';
+password = 'IoFUTBeaQDppSYcmBebA4rV8SJOEMCFI';
+server = 'dpg-d2jobg3e5dus738ce5vg-a.oregon-postgres.render.com';
+port = '5432';
+tableName = 'rvpackardcruise';
+
+% Step 1: Add the PostgreSQL JDBC driver to MATLAB's Java path
+% Download the PostgreSQL JDBC driver from https://jdbc.postgresql.org/download/
+% For example: postgresql-42.5.0.jar
+
+% Add the JDBC driver to the Java path
+% Find project root (parent of "database" folder)
+projectRoot = fileparts("C:\Users\bwerb\Documents\GitHub\Spray2_Processing\update_Spray2GliderVizData.bat");  
+
+% If this class is not in the root but in src/, adjust:
+projectRoot = fileparts(projectRoot);  
+% Build full path to the JAR in "database"
+jarFile = fullfile("C:\Users\bwerb\Documents\GitHub\Spray2_Processing",'Spray2_Processing','database','postgresql-42.7.7.jar');
+
+% Only add if not already on classpath
+if ~any(strcmp(javaclasspath('-dynamic'), jarFile))
+    javaaddpath(jarFile);
+end
+
+% Create the JDBC connection URL
+jdbcUrl = ['jdbc:postgresql://', server, ':', port, '/', databaseName];
+
+% Create the database connection
+conn = database(databaseName, username, password, 'org.postgresql.Driver', jdbcUrl);
+
+% Step 3: Check if connection was successful
+if ~isopen(conn)
+    error('Database Connection Failed: %s', conn.Message);
+else
+    disp('Successfully connected to PostgreSQL database');
+end
+
+newRow = table(lat,lon,unixtime,VariableNames={'latitude','longitude','unixtime'});
+sqlwrite(conn, tableName, newRow);
+sprintf('wrote new row to RVPackardCruise: %d, %d, %d', lat,lon,unixtime)
