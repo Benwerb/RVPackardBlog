@@ -281,13 +281,22 @@
             try {
                 updateStatus('loading', 'Fetching data...');
                 
-                const response = await fetch('https://www3.mbari.org/lobo/Data/GliderVizData/rvpackard.txt');
+                // Use CORS proxy to bypass cross-origin restrictions
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const targetUrl = 'https://www3.mbari.org/lobo/Data/GliderVizData/rvpackard.txt';
+                const fullUrl = proxyUrl + encodeURIComponent(targetUrl);
+                
+                console.log('Fetching from:', fullUrl); // Debug log
+                
+                const response = await fetch(fullUrl);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const csvText = await response.text();
+                console.log('Raw CSV data:', csvText.substring(0, 200) + '...'); // Debug log
+                
                 const lines = csvText.trim().split('\n');
                 
                 if (lines.length < 2) {
