@@ -7,6 +7,11 @@
 3. **Select Source**: Choose "GitHub Actions" as the source
 4. **Deploy**: The workflow will automatically deploy when you push to main
 
+## Live Site URL
+
+Once deployed, your site will be available at:
+`https://benwerb.github.io/RVPackardBlog/`
+
 ## Repository Structure
 
 ```

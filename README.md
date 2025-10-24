@@ -24,7 +24,7 @@ latitude,longitude,unixtime
 
 ## Live Site
 
-Visit the live tracking site: [Packard Cruise Tracker](https://yourusername.github.io/RVPackardBlog/)
+Visit the live tracking site: [Packard Cruise Tracker](https://benwerb.github.io/RVPackardBlog/)
 
 ## Technical Details
 
@@ -39,7 +39,7 @@ Visit the live tracking site: [Packard Cruise Tracker](https://yourusername.gith
 1. Push this repository to GitHub
 2. Go to repository Settings > Pages
 3. Select "Deploy from a branch" and choose "main"
-4. The site will be available at `https://yourusername.github.io/RVPackardBlog/`
+4. The site will be available at `https://benwerb.github.io/RVPackardBlog/`
 
 ## Browser Compatibility
 
