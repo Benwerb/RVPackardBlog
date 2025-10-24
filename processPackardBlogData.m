@@ -16,3 +16,7 @@ conn = database(databaseName, username, password, 'org.postgresql.Driver', jdbcU
 newRow = table(lat,lon,unixtime,VariableNames={'latitude','longitude','unixtime'});
 sqlwrite(conn, tableName, newRow);
 sprintf('wrote new row to RVPackardCruise: %d, %d, %d', lat,lon,unixtime)
+
+T = sqlread(conn,tableName);
+fname = fullfile("\\sirocco\wwwroot\lobo\Data\GliderVizData","rvpackard.txt");
+writetable(T,fname);
