@@ -294,16 +294,40 @@
                     throw new Error('No data available');
                 }
                 
-                // Get the last line (most recent data)
-                const lastLine = lines[lines.length - 1];
-                const [lat, lon, unixtime] = lastLine.split(',');
+                // Skip header line and get the last data line (most recent data)
+                const dataLines = lines.slice(1).filter(line => line.trim() !== '');
                 
-                const latitude = parseFloat(lat);
-                const longitude = parseFloat(lon);
-                const timestamp = parseInt(unixtime);
+                if (dataLines.length === 0) {
+                    throw new Error('No data lines found');
+                }
+                
+                const lastLine = dataLines[dataLines.length - 1];
+                console.log('Parsing line:', lastLine); // Debug log
+                
+                const parts = lastLine.split(',');
+                
+                if (parts.length !== 3) {
+                    throw new Error(`Invalid CSV format. Expected 3 columns, got ${parts.length}`);
+                }
+                
+                const [lat, lon, unixtime] = parts;
+                
+                const latitude = parseFloat(lat.trim());
+                const longitude = parseFloat(lon.trim());
+                const timestamp = parseInt(unixtime.trim());
+                
+                console.log('Parsed values:', { latitude, longitude, timestamp }); // Debug log
                 
                 if (isNaN(latitude) || isNaN(longitude) || isNaN(timestamp)) {
-                    throw new Error('Invalid data format');
+                    throw new Error(`Invalid data format. Lat: ${lat}, Lon: ${lon}, Time: ${unixtime}`);
+                }
+                
+                // Validate coordinate ranges
+                if (latitude < -90 || latitude > 90) {
+                    throw new Error(`Invalid latitude: ${latitude}`);
+                }
+                if (longitude < -180 || longitude > 180) {
+                    throw new Error(`Invalid longitude: ${longitude}`);
                 }
                 
                 // Update display
