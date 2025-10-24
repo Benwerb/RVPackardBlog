@@ -240,9 +240,41 @@
         function initMap() {
             map = L.map('map').setView([36.8, -121.8], 10);
             
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
+            // Cartoonish map options - uncomment one of these:
+            
+            // Option 1: Stamen Watercolor (artistic watercolor effect)
+            L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg', {
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                maxZoom: 16
             }).addTo(map);
+            
+            // Option 2: CartoDB Positron (clean, minimal, slightly cartoonish)
+            // L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            //     subdomains: 'abcd',
+            //     maxZoom: 20
+            // }).addTo(map);
+            
+            // Option 3: CartoDB Voyager (colorful, playful)
+            // L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            //     subdomains: 'abcd',
+            //     maxZoom: 20
+            // }).addTo(map);
+            
+            // Option 4: Stamen Toner (high contrast, artistic)
+            // L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png', {
+            //     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+            //     subdomains: 'abcd',
+            //     maxZoom: 20
+            // }).addTo(map);
+            
+            // Option 5: CartoDB Dark Matter (dark theme, sleek)
+            // L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            //     subdomains: 'abcd',
+            //     maxZoom: 20
+            // }).addTo(map);
         }
 
         // Convert unix timestamp to ISO 8601 UTC format
