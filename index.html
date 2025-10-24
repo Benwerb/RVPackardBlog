@@ -249,7 +249,7 @@
 
         // Initialize the map
         function initMap() {
-            map = L.map('map').setView([36.8, -121.8], 6);
+            map = L.map('map').setView([36.8, -121.8], 4);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
@@ -459,12 +459,12 @@
                 `);
             }
             
-            // Fit map to show entire track with more padding for wider view
+            // Fit map to show entire track with maximum padding for widest view
             if (points.length > 1) {
                 const group = new L.featureGroup([trackPolyline, vesselMarker]);
-                map.fitBounds(group.getBounds().pad(0.5));
+                map.fitBounds(group.getBounds().pad(2.0));
             } else {
-                map.setView([latestLat, latestLon], 6);
+                map.setView([latestLat, latestLon], 4);
             }
         }
 
