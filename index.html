@@ -374,102 +374,10 @@
                     <span class="data-value" id="timestamp">Loading...</span>
                 </div>
                 
-                <div class="weather-section">
-                    <h3 style="color: #4a5568; margin-bottom: 15px; font-size: 1.2rem;">Weather Forecast</h3>
-                    
-                    <div class="weather-day">
-                        <div class="weather-day-header">Thursday, October 23, 2025</div>
-                        <div class="weather-location">Moss Landing</div>
-                        <div class="weather-times">
-                            <div class="weather-time">
-                                <div class="weather-time-label">Morning (6:00 AM)</div>
-                                <div class="weather-time-value">Partly cloudy, 57°F, Wind: 5-10 mph NW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Noon (12:00 PM)</div>
-                                <div class="weather-time-value">Mostly sunny, 62°F, Wind: 8-12 mph NW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Evening (6:00 PM)</div>
-                                <div class="weather-time-value">Clear, 58°F, Wind: 5-8 mph NW</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="weather-day">
-                        <div class="weather-day-header">Friday, October 24, 2025</div>
-                        <div class="weather-location">Santa Barbara Basin</div>
-                        <div class="weather-times">
-                            <div class="weather-time">
-                                <div class="weather-time-label">Morning (6:00 AM)</div>
-                                <div class="weather-time-value">Partly cloudy, 60°F, Wind: 10-15 mph NW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Noon (12:00 PM)</div>
-                                <div class="weather-time-value">Sunny, 65°F, Wind: 12-18 mph NW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Evening (6:00 PM)</div>
-                                <div class="weather-time-value">Mostly clear, 61°F, Wind: 8-12 mph NW</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="weather-day">
-                        <div class="weather-day-header">Saturday, October 25, 2025</div>
-                        <div class="weather-location">Santa Barbara Basin</div>
-                        <div class="weather-times">
-                            <div class="weather-time">
-                                <div class="weather-time-label">Morning (6:00 AM)</div>
-                                <div class="weather-time-value">Cloudy, 61°F, Wind: 8-12 mph NW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Noon (12:00 PM)</div>
-                                <div class="weather-time-value">Partly sunny, 66°F, Wind: 10-15 mph NW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Evening (6:00 PM)</div>
-                                <div class="weather-time-value">Partly cloudy, 62°F, Wind: 6-10 mph NW</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="weather-day">
-                        <div class="weather-day-header">Sunday, October 26, 2025</div>
-                        <div class="weather-location">Santa Monica Basin</div>
-                        <div class="weather-times">
-                            <div class="weather-time">
-                                <div class="weather-time-label">Morning (6:00 AM)</div>
-                                <div class="weather-time-value">Foggy, 62°F, Wind: 5-8 mph SW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Noon (12:00 PM)</div>
-                                <div class="weather-time-value">Mostly sunny, 68°F, Wind: 8-12 mph SW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Evening (6:00 PM)</div>
-                                <div class="weather-time-value">Clear, 64°F, Wind: 5-10 mph SW</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="weather-day">
-                        <div class="weather-day-header">Monday, October 27, 2025</div>
-                        <div class="weather-location">Moss Landing</div>
-                        <div class="weather-times">
-                            <div class="weather-time">
-                                <div class="weather-time-label">Morning (6:00 AM)</div>
-                                <div class="weather-time-value">Partly cloudy, 58°F, Wind: 6-10 mph NW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Noon (12:00 PM)</div>
-                                <div class="weather-time-value">Sunny, 63°F, Wind: 8-14 mph NW</div>
-                            </div>
-                            <div class="weather-time">
-                                <div class="weather-time-label">Evening (6:00 PM)</div>
-                                <div class="weather-time-value">Clear, 59°F, Wind: 5-8 mph NW</div>
-                            </div>
-                        </div>
+                <div class="weather-section" id="currentWeather">
+                    <h3 style="color: #4a5568; margin-bottom: 15px; font-size: 1.2rem;">Current Weather - Santa Barbara Basin</h3>
+                    <div id="currentWeatherContent">
+                        <div style="text-align: center; color: #718096; padding: 20px;">Loading weather data...</div>
                     </div>
                 </div>
             </div>
@@ -546,6 +454,14 @@
                     <img src="images/ben_d_joe_3dprint.jpg" alt="Ben D and Joe with 3D print" class="gallery-image">
                     <div class="image-caption">Ben D and Joe 3D print repairs for THIONOX</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Trip Weather Forecast Section -->
+        <div class="gallery-section">
+            <h2>Trip Weather Forecast</h2>
+            <div id="tripWeatherForecast">
+                <div style="text-align: center; color: #718096; padding: 20px;">Loading weather forecast...</div>
             </div>
         </div>
 
@@ -804,16 +720,21 @@
 
         // Weather API configuration
         const WEATHER_API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // Replace with your API key
-        const weatherLocations = [
-            { date: '2025-10-23', location: 'Moss Landing', lat: 36.8034, lon: -121.7900, timezone: 'America/Los_Angeles' },
-            { date: '2025-10-24', location: 'Santa Barbara Basin', lat: 34.2744, lon: -120.0392, timezone: 'America/Los_Angeles' },
-            { date: '2025-10-25', location: 'Santa Barbara Basin', lat: 34.2744, lon: -120.0392, timezone: 'America/Los_Angeles' },
-            { date: '2025-10-26', location: 'Santa Monica Basin', lat: 33.9500, lon: -118.8500, timezone: 'America/Los_Angeles' },
-            { date: '2025-10-27', location: 'Moss Landing', lat: 36.8034, lon: -121.7900, timezone: 'America/Los_Angeles' }
+        
+        // Current weather location - Santa Barbara Basin
+        const currentWeatherLocation = { location: 'Santa Barbara Basin', lat: 34.2744, lon: -120.0392 };
+        
+        // Trip weather forecast locations
+        const tripWeatherLocations = [
+            { date: '2025-10-23', location: 'Moss Landing', lat: 36.8034, lon: -121.7900 },
+            { date: '2025-10-24', location: 'Santa Barbara Basin', lat: 34.2744, lon: -120.0392 },
+            { date: '2025-10-25', location: 'Santa Barbara Basin', lat: 34.2744, lon: -120.0392 },
+            { date: '2025-10-26', location: 'Santa Monica Basin', lat: 33.9500, lon: -118.8500 },
+            { date: '2025-10-27', location: 'Moss Landing', lat: 36.8034, lon: -121.7900 }
         ];
 
         // Fetch weather data from OpenWeatherMap API
-        async function fetchWeatherData(lat, lon, date) {
+        async function fetchWeatherData(lat, lon, date = null) {
             try {
                 const response = await fetch(
                     `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=imperial`
@@ -831,7 +752,49 @@
             }
         }
 
-        // Get weather data for specific times (6 AM, 12 PM, 6 PM PDT)
+        // Get weather data for today's three times (6 AM, 12 PM, 6 PM PDT)
+        function getTodayWeatherTimes(weatherData) {
+            const targetTimes = [6, 12, 18]; // 6 AM, 12 PM, 6 PM
+            const results = [];
+            
+            if (!weatherData || !weatherData.list) return null;
+            
+            // Get today's date in PDT
+            const now = new Date();
+            const todayPDT = new Date(now.toLocaleString("en-US", {timeZone: "America/Los_Angeles"}));
+            const todayStart = new Date(todayPDT.getFullYear(), todayPDT.getMonth(), todayPDT.getDate());
+            
+            targetTimes.forEach(hour => {
+                // Find forecast closest to the target time
+                const targetDateTime = new Date(todayStart);
+                targetDateTime.setHours(hour, 0, 0, 0);
+                const targetUnixTime = Math.floor(targetDateTime.getTime() / 1000);
+                
+                // Find the closest forecast
+                let closestForecast = weatherData.list[0];
+                let smallestDiff = Math.abs(weatherData.list[0].dt - targetUnixTime);
+                
+                weatherData.list.forEach(forecast => {
+                    const diff = Math.abs(forecast.dt - targetUnixTime);
+                    if (diff < smallestDiff) {
+                        smallestDiff = diff;
+                        closestForecast = forecast;
+                    }
+                });
+                
+                results.push({
+                    time: hour,
+                    temp: Math.round(closestForecast.main.temp),
+                    description: closestForecast.weather[0].description,
+                    windSpeed: Math.round(closestForecast.wind.speed),
+                    windDeg: closestForecast.wind.deg || 0
+                });
+            });
+            
+            return results;
+        }
+        
+        // Get weather data for specific dates (for trip forecast)
         function getWeatherForTimes(weatherData, targetDate) {
             const targetTimes = [6, 12, 18]; // 6 AM, 12 PM, 6 PM
             const results = [];
@@ -884,49 +847,97 @@
             return `${hour}:00`;
         }
 
-        // Update weather display
-        function updateWeatherDisplay(weatherData, dayIndex) {
-            const location = weatherLocations[dayIndex];
-            const weatherTimes = getWeatherForTimes(weatherData, location.date);
+        // Display current weather for Santa Barbara Basin
+        function displayCurrentWeather(weatherData) {
+            const weatherTimes = getTodayWeatherTimes(weatherData);
             
             if (!weatherTimes) {
-                console.warn(`No weather data for ${location.location}`);
+                document.getElementById('currentWeatherContent').innerHTML = 
+                    '<div style="text-align: center; color: #718096; padding: 20px;">Unable to load weather data</div>';
                 return;
             }
             
-            // Find the corresponding weather day div
-            const weatherDays = document.querySelectorAll('.weather-day');
-            if (weatherDays[dayIndex]) {
-                const weatherTimesDiv = weatherDays[dayIndex].querySelector('.weather-times');
-                if (weatherTimesDiv) {
-                    weatherTimesDiv.innerHTML = weatherTimes.map(w => `
-                        <div class="weather-time">
-                            <div class="weather-time-label">${formatTimeLabel(w.time)}</div>
-                            <div class="weather-time-value">${w.description}, ${w.temp}°F, Wind: ${w.windSpeed} mph ${getWindDirection(w.windDeg)}</div>
-                        </div>
-                    `).join('');
-                }
-            }
+            const now = new Date();
+            const todayStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            const html = `
+                <div class="weather-day">
+                    <div class="weather-day-header">${todayStr}</div>
+                    <div class="weather-location">${currentWeatherLocation.location}</div>
+                    <div class="weather-times">
+                        ${weatherTimes.map(w => `
+                            <div class="weather-time">
+                                <div class="weather-time-label">${formatTimeLabel(w.time)}</div>
+                                <div class="weather-time-value">${w.description}, ${w.temp}°F, Wind: ${w.windSpeed} mph ${getWindDirection(w.windDeg)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('currentWeatherContent').innerHTML = html;
         }
-
-        // Fetch and display weather for all locations
-        async function loadAllWeatherData() {
-            // Check if API key is set
+        
+        // Display trip weather forecast
+        async function displayTripForecast() {
             if (WEATHER_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
-                console.warn('Please set your OpenWeatherMap API key in the WEATHER_API_KEY variable');
+                document.getElementById('tripWeatherForecast').innerHTML = 
+                    '<div style="text-align: center; color: #718096; padding: 20px;">Please set your OpenWeatherMap API key to load weather forecast</div>';
                 return;
             }
             
-            for (let i = 0; i < weatherLocations.length; i++) {
-                const location = weatherLocations[i];
+            let html = '';
+            
+            for (const location of tripWeatherLocations) {
                 const weatherData = await fetchWeatherData(location.lat, location.lon, location.date);
                 
                 if (weatherData) {
-                    updateWeatherDisplay(weatherData, i);
+                    const weatherTimes = getWeatherForTimes(weatherData, location.date);
+                    
+                    if (weatherTimes) {
+                        const dateObj = new Date(location.date);
+                        const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                        
+                        html += `
+                            <div class="weather-day">
+                                <div class="weather-day-header">${dateStr}</div>
+                                <div class="weather-location">${location.location}</div>
+                                <div class="weather-times">
+                                    ${weatherTimes.map(w => `
+                                        <div class="weather-time">
+                                            <div class="weather-time-label">${formatTimeLabel(w.time)}</div>
+                                            <div class="weather-time-value">${w.description}, ${w.temp}°F, Wind: ${w.windSpeed} mph ${getWindDirection(w.windDeg)}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
                 }
                 
                 // Add small delay to avoid API rate limits
                 await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            if (html) {
+                document.getElementById('tripWeatherForecast').innerHTML = html;
+            } else {
+                document.getElementById('tripWeatherForecast').innerHTML = 
+                    '<div style="text-align: center; color: #718096; padding: 20px;">Unable to load trip weather forecast</div>';
+            }
+        }
+
+        // Load current weather for Santa Barbara Basin
+        async function loadCurrentWeather() {
+            if (WEATHER_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
+                document.getElementById('currentWeatherContent').innerHTML = 
+                    '<div style="text-align: center; color: #718096; padding: 20px;">Please set your OpenWeatherMap API key</div>';
+                return;
+            }
+            
+            const weatherData = await fetchWeatherData(currentWeatherLocation.lat, currentWeatherLocation.lon, null);
+            if (weatherData) {
+                displayCurrentWeather(weatherData);
             }
         }
 
@@ -934,7 +945,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             initMap();
             startAutoRefresh();
-            loadAllWeatherData();
+            loadCurrentWeather();
+            displayTripForecast();
         });
     </script>
 </body>
