@@ -726,39 +726,26 @@
         
         // Trip weather forecast locations
         function getTripWeatherLocations() {
-            // Generate dates for Thursday through Monday
-            const today = new Date();
-            const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-            const locations = [];
-            
-            // Calculate the date for the upcoming Thursday
-            let daysUntilThursday = (4 - dayOfWeek + 7) % 7;
-            if (daysUntilThursday === 0 && today.getHours() < 12) {
-                // If it's Thursday morning, show today
-                daysUntilThursday = 0;
-            } else if (daysUntilThursday === 0) {
-                // If it's Thursday afternoon, show next Thursday
-                daysUntilThursday = 7;
-            }
-            
-            const thursday = new Date(today);
-            thursday.setDate(today.getDate() + daysUntilThursday);
-            
-            // Generate Thursday through Monday (5 days)
-            for (let i = 0; i < 5; i++) {
-                const date = new Date(thursday);
-                date.setDate(thursday.getDate() + i);
-                
-                const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
-                
-                locations.push({
-                    date: date.toISOString().split('T')[0], // Format as YYYY-MM-DD
-                    dayName: dayName,
+            const locations = [
+                {
+                    date: '2025-10-23',
                     location: 'Moss Landing',
                     lat: 36.8034,
                     lon: -121.7900
-                });
-            }
+                },
+                {
+                    date: '2025-10-24',
+                    location: 'Santa Barbara Basin',
+                    lat: 34.2744,
+                    lon: -120.0392
+                },
+                {
+                    date: '2025-10-25',
+                    location: 'Santa Barbara Basin',
+                    lat: 34.2744,
+                    lon: -120.0392
+                }
+            ];
             
             return locations;
         }
@@ -768,7 +755,7 @@
             try {
                 // Use CORS proxy to bypass cross-origin restrictions
                 const proxyUrl = 'https://api.allorigins.win/get?url=';
-                const apiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=7&aqi=no&alerts=no`;
+                const apiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=3&aqi=no&alerts=no`;
                 const fullUrl = proxyUrl + encodeURIComponent(apiUrl);
                 
                 const response = await fetch(fullUrl);
