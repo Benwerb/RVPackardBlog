@@ -719,32 +719,55 @@
         }
 
         // Weather API configuration
-        const WEATHER_API_KEY = 'YOUR_OPENWEATHERMAP_API_KEY'; // Replace with your API key
+        const WEATHER_API_KEY = 'd127f77c6cbc403e93d165829252510'; // weatherapi.com API key
         
         // Current weather location - Santa Barbara Basin
         const currentWeatherLocation = { location: 'Santa Barbara Basin', lat: 34.2744, lon: -120.0392 };
         
-        // Trip weather forecast locations
-        const tripWeatherLocations = [
-            { date: '2025-10-23', location: 'Moss Landing', lat: 36.8034, lon: -121.7900 },
-            { date: '2025-10-24', location: 'Santa Barbara Basin', lat: 34.2744, lon: -120.0392 },
-            { date: '2025-10-25', location: 'Santa Barbara Basin', lat: 34.2744, lon: -120.0392 },
-            { date: '2025-10-26', location: 'Santa Monica Basin', lat: 33.9500, lon: -118.8500 },
-            { date: '2025-10-27', location: 'Moss Landing', lat: 36.8034, lon: -121.7900 }
-        ];
+        // Trip weather forecast locations - dates relative to today
+        function getTripWeatherLocations() {
+            const today = new Date();
+            const locations = [];
+            
+            for (let i = 0; i < 5; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                const locationNames = ['Moss Landing', 'Santa Barbara Basin', 'Santa Barbara Basin', 'Santa Monica Basin', 'Moss Landing'];
+                const coords = [
+                    { lat: 36.8034, lon: -121.7900 },      // Moss Landing
+                    { lat: 34.2744, lon: -120.0392 },      // Santa Barbara Basin
+                    { lat: 34.2744, lon: -120.0392 },      // Santa Barbara Basin
+                    { lat: 33.9500, lon: -118.8500 },      // Santa Monica Basin
+                    { lat: 36.8034, lon: -121.7900 }       // Moss Landing
+                ];
+                
+                locations.push({
+                    date: date.toISOString().split('T')[0],
+                    location: locationNames[i],
+                    lat: coords[i].lat,
+                    lon: coords[i].lon
+                });
+            }
+            
+            return locations;
+        }
 
-        // Fetch weather data from OpenWeatherMap API
+        // Fetch weather data from weatherapi.com API
         async function fetchWeatherData(lat, lon, date = null) {
             try {
-                const response = await fetch(
-                    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=imperial`
-                );
+                // Use CORS proxy to bypass cross-origin restrictions
+                const proxyUrl = 'https://api.allorigins.win/get?url=';
+                const apiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=3&aqi=no&alerts=no`;
+                const fullUrl = proxyUrl + encodeURIComponent(apiUrl);
+                
+                const response = await fetch(fullUrl);
                 
                 if (!response.ok) {
                     throw new Error(`Weather API error: ${response.status}`);
                 }
                 
-                const data = await response.json();
+                const result = await response.json();
+                const data = JSON.parse(result.contents);
                 return data;
             } catch (error) {
                 console.error('Error fetching weather data:', error);
@@ -757,25 +780,21 @@
             const targetTimes = [6, 12, 18]; // 6 AM, 12 PM, 6 PM
             const results = [];
             
-            if (!weatherData || !weatherData.list) return null;
+            if (!weatherData || !weatherData.forecast || !weatherData.forecast.forecastday) return null;
             
-            // Get today's date in PDT
-            const now = new Date();
-            const todayPDT = new Date(now.toLocaleString("en-US", {timeZone: "America/Los_Angeles"}));
-            const todayStart = new Date(todayPDT.getFullYear(), todayPDT.getMonth(), todayPDT.getDate());
+            // Get today's forecast (first day in array)
+            const todayForecast = weatherData.forecast.forecastday[0];
+            const hourForecasts = todayForecast.hour || [];
             
             targetTimes.forEach(hour => {
                 // Find forecast closest to the target time
-                const targetDateTime = new Date(todayStart);
-                targetDateTime.setHours(hour, 0, 0, 0);
-                const targetUnixTime = Math.floor(targetDateTime.getTime() / 1000);
+                // weatherapi.com provides hourly forecasts, so find the closest hour
+                let closestForecast = hourForecasts[0];
+                let smallestDiff = Infinity;
                 
-                // Find the closest forecast
-                let closestForecast = weatherData.list[0];
-                let smallestDiff = Math.abs(weatherData.list[0].dt - targetUnixTime);
-                
-                weatherData.list.forEach(forecast => {
-                    const diff = Math.abs(forecast.dt - targetUnixTime);
+                hourForecasts.forEach(forecast => {
+                    const forecastHour = new Date(forecast.time).getHours();
+                    const diff = Math.abs(forecastHour - hour);
                     if (diff < smallestDiff) {
                         smallestDiff = diff;
                         closestForecast = forecast;
@@ -784,10 +803,10 @@
                 
                 results.push({
                     time: hour,
-                    temp: Math.round(closestForecast.main.temp),
-                    description: closestForecast.weather[0].description,
-                    windSpeed: Math.round(closestForecast.wind.speed),
-                    windDeg: closestForecast.wind.deg || 0
+                    temp: Math.round(closestForecast.temp_f),
+                    description: closestForecast.condition.text,
+                    windSpeed: Math.round(closestForecast.wind_mph),
+                    windDeg: closestForecast.wind_degree || 0
                 });
             });
             
@@ -799,22 +818,25 @@
             const targetTimes = [6, 12, 18]; // 6 AM, 12 PM, 6 PM
             const results = [];
             
-            if (!weatherData || !weatherData.list) return null;
+            if (!weatherData || !weatherData.forecast || !weatherData.forecast.forecastday) return null;
             
-            // Convert target date to PDT timestamp
-            const targetDateTime = new Date(targetDate + 'T00:00:00-07:00');
-            const targetDayStart = targetDateTime.getTime() / 1000; // Unix timestamp
+            // Find the forecast day that matches targetDate
+            const targetDay = weatherData.forecast.forecastday.find(day => 
+                day.date.startsWith(targetDate)
+            );
+            
+            if (!targetDay) return null;
+            
+            const hourForecasts = targetDay.hour || [];
             
             targetTimes.forEach(hour => {
                 // Find forecast closest to the target time
-                const targetUnixTime = targetDayStart + (hour * 3600);
+                let closestForecast = hourForecasts[0];
+                let smallestDiff = Infinity;
                 
-                // Find the closest forecast
-                let closestForecast = weatherData.list[0];
-                let smallestDiff = Math.abs(weatherData.list[0].dt - targetUnixTime);
-                
-                weatherData.list.forEach(forecast => {
-                    const diff = Math.abs(forecast.dt - targetUnixTime);
+                hourForecasts.forEach(forecast => {
+                    const forecastHour = new Date(forecast.time).getHours();
+                    const diff = Math.abs(forecastHour - hour);
                     if (diff < smallestDiff) {
                         smallestDiff = diff;
                         closestForecast = forecast;
@@ -823,10 +845,10 @@
                 
                 results.push({
                     time: hour,
-                    temp: Math.round(closestForecast.main.temp),
-                    description: closestForecast.weather[0].description,
-                    windSpeed: Math.round(closestForecast.wind.speed),
-                    windDeg: closestForecast.wind.deg || 0
+                    temp: Math.round(closestForecast.temp_f),
+                    description: closestForecast.condition.text,
+                    windSpeed: Math.round(closestForecast.wind_mph),
+                    windDeg: closestForecast.wind_degree || 0
                 });
             });
             
@@ -880,9 +902,11 @@
         
         // Display trip weather forecast
         async function displayTripForecast() {
-            if (WEATHER_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
+            const tripWeatherLocations = getTripWeatherLocations();
+            
+            if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
                 document.getElementById('tripWeatherForecast').innerHTML = 
-                    '<div style="text-align: center; color: #718096; padding: 20px;">Please set your OpenWeatherMap API key to load weather forecast</div>';
+                    '<div style="text-align: center; color: #718096; padding: 20px;">Please set your Weather API key to load weather forecast</div>';
                 return;
             }
             
@@ -929,9 +953,9 @@
 
         // Load current weather for Santa Barbara Basin
         async function loadCurrentWeather() {
-            if (WEATHER_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
+            if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_OPENWEATHERMAP_API_KEY') {
                 document.getElementById('currentWeatherContent').innerHTML = 
-                    '<div style="text-align: center; color: #718096; padding: 20px;">Please set your OpenWeatherMap API key</div>';
+                    '<div style="text-align: center; color: #718096; padding: 20px;">Please set your Weather API key</div>';
                 return;
             }
             
