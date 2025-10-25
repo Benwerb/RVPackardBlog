@@ -248,6 +248,10 @@
             padding-bottom: 10px;
         }
 
+        .blog-content {
+            padding-left: 40px;
+        }
+
         .blog-content h3 {
             color: #2d3748;
             margin: 25px 0 15px 0;
@@ -256,8 +260,24 @@
 
         .blog-content p {
             line-height: 1.6;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
             color: #4a5568;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .blog-content p:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .blog-content p:before {
+            content: "📝";
+            position: absolute;
+            left: -30px;
+            top: 0;
+            font-size: 1.2rem;
         }
 
         .specs-list {
