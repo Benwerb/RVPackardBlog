@@ -485,7 +485,7 @@
 
         // Initialize the map
         function initMap() {
-            map = L.map('map').setView([36.8, -121.8], 2);
+            map = L.map('map').setView([36.8, -121.8], 1);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
@@ -700,7 +700,7 @@
                 const group = new L.featureGroup([trackPolyline, vesselMarker]);
                 map.fitBounds(group.getBounds().pad(3.0));
             } else {
-                map.setView([latestLat, latestLon], 2);
+                map.setView([latestLat, latestLon], 1);
             }
         }
 
@@ -726,20 +726,39 @@
         
         // Trip weather forecast locations
         function getTripWeatherLocations() {
-            const locations = [
-                {
-                    date: '2025-10-23',
+            // Generate dates for Thursday through Monday
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            const locations = [];
+            
+            // Calculate the date for the upcoming Thursday
+            let daysUntilThursday = (4 - dayOfWeek + 7) % 7;
+            if (daysUntilThursday === 0 && today.getHours() < 12) {
+                // If it's Thursday morning, show today
+                daysUntilThursday = 0;
+            } else if (daysUntilThursday === 0) {
+                // If it's Thursday afternoon, show next Thursday
+                daysUntilThursday = 7;
+            }
+            
+            const thursday = new Date(today);
+            thursday.setDate(today.getDate() + daysUntilThursday);
+            
+            // Generate Thursday through Monday (5 days)
+            for (let i = 0; i < 5; i++) {
+                const date = new Date(thursday);
+                date.setDate(thursday.getDate() + i);
+                
+                const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
+                
+                locations.push({
+                    date: date.toISOString().split('T')[0], // Format as YYYY-MM-DD
+                    dayName: dayName,
                     location: 'Moss Landing',
                     lat: 36.8034,
                     lon: -121.7900
-                },
-                {
-                    date: '2025-10-27',
-                    location: 'Moss Landing',
-                    lat: 36.8034,
-                    lon: -121.7900
-                }
-            ];
+                });
+            }
             
             return locations;
         }
@@ -749,7 +768,7 @@
             try {
                 // Use CORS proxy to bypass cross-origin restrictions
                 const proxyUrl = 'https://api.allorigins.win/get?url=';
-                const apiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=3&aqi=no&alerts=no`;
+                const apiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=7&aqi=no&alerts=no`;
                 const fullUrl = proxyUrl + encodeURIComponent(apiUrl);
                 
                 const response = await fetch(fullUrl);
@@ -902,37 +921,47 @@
                 return;
             }
             
+            // Since all locations are the same (Moss Landing), fetch weather once
+            if (tripWeatherLocations.length === 0) {
+                document.getElementById('tripWeatherForecast').innerHTML = 
+                    '<div style="text-align: center; color: #718096; padding: 20px;">No forecast dates available</div>';
+                return;
+            }
+            
+            const firstLocation = tripWeatherLocations[0];
+            const weatherData = await fetchWeatherData(firstLocation.lat, firstLocation.lon, null);
+            
+            if (!weatherData) {
+                document.getElementById('tripWeatherForecast').innerHTML = 
+                    '<div style="text-align: center; color: #718096; padding: 20px;">Unable to load weather forecast</div>';
+                return;
+            }
+            
             let html = '';
             
+            // Process each date in the trip forecast
             for (const location of tripWeatherLocations) {
-                const weatherData = await fetchWeatherData(location.lat, location.lon, location.date);
+                const weatherTimes = getWeatherForTimes(weatherData, location.date);
                 
-                if (weatherData) {
-                    const weatherTimes = getWeatherForTimes(weatherData, location.date);
+                if (weatherTimes) {
+                    const dateObj = new Date(location.date);
+                    const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                     
-                    if (weatherTimes) {
-                        const dateObj = new Date(location.date);
-                        const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                        
-                        html += `
-                            <div class="weather-day">
-                                <div class="weather-day-header">${dateStr}</div>
-                                <div class="weather-location">${location.location}</div>
-                                <div class="weather-times">
-                                    ${weatherTimes.map(w => `
-                                        <div class="weather-time">
-                                            <div class="weather-time-label">${formatTimeLabel(w.time)}</div>
-                                            <div class="weather-time-value">${w.description}, ${w.temp}°F, Wind: ${w.windSpeed} mph ${getWindDirection(w.windDeg)}</div>
-                                        </div>
-                                    `).join('')}
-                                </div>
+                    html += `
+                        <div class="weather-day">
+                            <div class="weather-day-header">${dateStr}</div>
+                            <div class="weather-location">${location.location}</div>
+                            <div class="weather-times">
+                                ${weatherTimes.map(w => `
+                                    <div class="weather-time">
+                                        <div class="weather-time-label">${formatTimeLabel(w.time)}</div>
+                                        <div class="weather-time-value">${w.description}, ${w.temp}°F, Wind: ${w.windSpeed} mph ${getWindDirection(w.windDeg)}</div>
+                                    </div>
+                                `).join('')}
                             </div>
-                        `;
-                    }
+                        </div>
+                    `;
                 }
-                
-                // Add small delay to avoid API rate limits
-                await new Promise(resolve => setTimeout(resolve, 500));
             }
             
             if (html) {
