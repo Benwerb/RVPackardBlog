@@ -398,7 +398,7 @@
                 <p>For the Santa Barbara Basin Cruise we are searching for the presence of thiosulfite in an oxygen minimum zone. The shape of the seafloor acts like a bowl, keeping water stagnant and from mixing with higher oxygen waters.</p>
 
                 <h3>Blog Log</h3>
-                <p>Day 2 at sea. The water is blue, the sky is grey. Moral is high. Many musical instruments have been played. When will be people get annoyed?? -Yours truly</p>
+                <p>Day 2 at sea. The water is blue, the sky is grey. Morale is high. Many musical instruments have been played. When will people get annoyed?? -Yours truly</p>
                 
                 <p>It is currently 20:55pm, we're about to finish running the sample of our 2nd cast of the day. We found traces of thiosulfate on very low oxygen concentration waters! We also found evidence of nitrite! Our next cast to confirm results will be at about 9:30pm, we'll only be looking at deeper waters where we found these exiting measurements! In the meantime, everybody is loading on snacks and beverages, music is blasting in the wet lab, and we're ready for more science! - By the (arguably) most handsome Frenchman on the ship</p>
 
@@ -908,47 +908,44 @@
                 return;
             }
             
-            // Since all locations are the same (Moss Landing), fetch weather once
             if (tripWeatherLocations.length === 0) {
                 document.getElementById('tripWeatherForecast').innerHTML = 
                     '<div style="text-align: center; color: #718096; padding: 20px;">No forecast dates available</div>';
                 return;
             }
             
-            const firstLocation = tripWeatherLocations[0];
-            const weatherData = await fetchWeatherData(firstLocation.lat, firstLocation.lon, null);
-            
-            if (!weatherData) {
-                document.getElementById('tripWeatherForecast').innerHTML = 
-                    '<div style="text-align: center; color: #718096; padding: 20px;">Unable to load weather forecast</div>';
-                return;
-            }
-            
             let html = '';
             
-            // Process each date in the trip forecast
+            // Process each location separately since they might have different coordinates
             for (const location of tripWeatherLocations) {
-                const weatherTimes = getWeatherForTimes(weatherData, location.date);
+                const weatherData = await fetchWeatherData(location.lat, location.lon, null);
                 
-                if (weatherTimes) {
-                    const dateObj = new Date(location.date);
-                    const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                if (weatherData) {
+                    const weatherTimes = getWeatherForTimes(weatherData, location.date);
                     
-                    html += `
-                        <div class="weather-day">
-                            <div class="weather-day-header">${dateStr}</div>
-                            <div class="weather-location">${location.location}</div>
-                            <div class="weather-times">
-                                ${weatherTimes.map(w => `
-                                    <div class="weather-time">
-                                        <div class="weather-time-label">${formatTimeLabel(w.time)}</div>
-                                        <div class="weather-time-value">${w.description}, ${w.temp}°F, Wind: ${w.windSpeed} mph ${getWindDirection(w.windDeg)}</div>
-                                    </div>
-                                `).join('')}
+                    if (weatherTimes) {
+                        const dateObj = new Date(location.date);
+                        const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                        
+                        html += `
+                            <div class="weather-day">
+                                <div class="weather-day-header">${dateStr}</div>
+                                <div class="weather-location">${location.location}</div>
+                                <div class="weather-times">
+                                    ${weatherTimes.map(w => `
+                                        <div class="weather-time">
+                                            <div class="weather-time-label">${formatTimeLabel(w.time)}</div>
+                                            <div class="weather-time-value">${w.description}, ${w.temp}°F, Wind: ${w.windSpeed} mph ${getWindDirection(w.windDeg)}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }
+                
+                // Add small delay to avoid API rate limits
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
             
             if (html) {
