@@ -491,7 +491,7 @@
 
         // Initialize the map
         function initMap() {
-            map = L.map('map').setView([36.8, -121.8], 6);
+            map = L.map('map').setView([36.8, -121.8], 3);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
@@ -706,7 +706,7 @@
                 const group = new L.featureGroup([trackPolyline, vesselMarker]);
                 map.fitBounds(group.getBounds().pad(0.5));
             } else {
-                map.setView([latestLat, latestLon], 6);
+                map.setView([latestLat, latestLon], 3);
             }
         }
 
