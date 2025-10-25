@@ -485,7 +485,7 @@
 
         // Initialize the map
         function initMap() {
-            map = L.map('map').setView([36.8, -121.8], 4);
+            map = L.map('map').setView([36.8, -121.8], 2);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
@@ -698,9 +698,9 @@
             // Fit map to show entire track with maximum padding for widest view
             if (points.length > 1) {
                 const group = new L.featureGroup([trackPolyline, vesselMarker]);
-                map.fitBounds(group.getBounds().pad(2.0));
+                map.fitBounds(group.getBounds().pad(3.0));
             } else {
-                map.setView([latestLat, latestLon], 4);
+                map.setView([latestLat, latestLon], 2);
             }
         }
 
@@ -724,30 +724,22 @@
         // Current weather location - Santa Barbara Basin
         const currentWeatherLocation = { location: 'Santa Barbara Basin', lat: 34.2744, lon: -120.0392 };
         
-        // Trip weather forecast locations - dates relative to today
+        // Trip weather forecast locations
         function getTripWeatherLocations() {
-            const today = new Date();
-            const locations = [];
-            
-            for (let i = 0; i < 5; i++) {
-                const date = new Date(today);
-                date.setDate(today.getDate() + i);
-                const locationNames = ['Moss Landing', 'Santa Barbara Basin', 'Santa Barbara Basin', 'Santa Monica Basin', 'Moss Landing'];
-                const coords = [
-                    { lat: 36.8034, lon: -121.7900 },      // Moss Landing
-                    { lat: 34.2744, lon: -120.0392 },      // Santa Barbara Basin
-                    { lat: 34.2744, lon: -120.0392 },      // Santa Barbara Basin
-                    { lat: 33.9500, lon: -118.8500 },      // Santa Monica Basin
-                    { lat: 36.8034, lon: -121.7900 }       // Moss Landing
-                ];
-                
-                locations.push({
-                    date: date.toISOString().split('T')[0],
-                    location: locationNames[i],
-                    lat: coords[i].lat,
-                    lon: coords[i].lon
-                });
-            }
+            const locations = [
+                {
+                    date: '2025-10-23',
+                    location: 'Moss Landing',
+                    lat: 36.8034,
+                    lon: -121.7900
+                },
+                {
+                    date: '2025-10-27',
+                    location: 'Moss Landing',
+                    lat: 36.8034,
+                    lon: -121.7900
+                }
+            ];
             
             return locations;
         }
