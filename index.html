@@ -373,6 +373,10 @@
                     <span class="data-label">Timestamp (UTC):</span>
                     <span class="data-value" id="timestamp">Loading...</span>
                 </div>
+                <div class="data-item">
+                    <span class="data-label">Timestamp (PDT):</span>
+                    <span class="data-value" id="timestampPdt">Loading...</span>
+                </div>
                 
                 <div class="weather-section" id="currentWeather">
                     <h3 style="color: #4a5568; margin-bottom: 15px; font-size: 1.2rem;">Current Weather - Santa Barbara Basin</h3>
@@ -559,6 +563,21 @@
             return date.toISOString();
         }
 
+        // Convert unix timestamp to PDT format
+        function unixToPDT(unixTimestamp) {
+            const date = new Date(unixTimestamp * 1000);
+            return date.toLocaleString('en-US', {
+                timeZone: 'America/Los_Angeles',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+        }
+
         // Update status indicator
         function updateStatus(status, message) {
             const indicator = document.getElementById('statusIndicator');
@@ -659,6 +678,7 @@
                 document.getElementById('latitude').textContent = latitude.toFixed(6);
                 document.getElementById('longitude').textContent = longitude.toFixed(6);
                 document.getElementById('timestamp').textContent = unixToISO8601(timestamp);
+                document.getElementById('timestampPdt').textContent = unixToPDT(timestamp);
                 
                 // Update map with track and latest position
                 updateMapWithTrack(parsedPoints, latitude, longitude);
@@ -676,6 +696,7 @@
                 document.getElementById('latitude').textContent = 'Error';
                 document.getElementById('longitude').textContent = 'Error';
                 document.getElementById('timestamp').textContent = 'Error';
+                document.getElementById('timestampPdt').textContent = 'Error';
             }
         }
 
